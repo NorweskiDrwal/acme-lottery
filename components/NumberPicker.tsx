@@ -1,13 +1,14 @@
 import { useRouter } from "expo-router";
 import { useCallback, useEffect } from "react";
-import { Alert, Pressable, Text, View } from "react-native";
+import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
 
 import useListOfPlays from "@/hooks/useListOfPlays";
 import useNumberPicker from "@/hooks/useNumberPicker";
-import { makeKey, sequence } from "@/utils";
+import makeKey from "@/utils/makeKey";
+import sequence from "@/utils/toSequence";
 
 import SelectedNumbersDisplay from "./SelectedNumbersDisplay";
-import StyledButton from "./StyledButton";
+import ThemedButton from "./ThemedButton";
 
 export default function NumberPicker() {
   const router = useRouter();
@@ -50,50 +51,16 @@ export default function NumberPicker() {
   }, [plays, router, addPlay, selectedNumbers, clearSelectedNumbers]);
 
   return (
-    <View
-      style={{
-        gap: 20,
-        width: "100%",
-        height: "auto",
-        display: "flex",
-        flexDirection: "column",
-      }}
-    >
+    <View style={styles.container}>
       <SelectedNumbersDisplay />
 
-      <View
-        style={{
-          display: "flex",
-          paddingHorizontal: 20,
-          flexDirection: "column",
-          justifyContent: "space-between",
-        }}
-      >
-        <View
-          style={{
-            gap: 20,
-            display: "flex",
-            alignItems: "center",
-          }}
-        >
-          <Text
-            style={{
-              fontSize: 24,
-              fontWeight: "bold",
-            }}
-          >
+      <View style={styles.wrapper}>
+        <View style={styles.picker}>
+          <Text style={styles.picker_heading}>
             Pick {selectionLimit} numbers
           </Text>
 
-          <View
-            style={{
-              gap: 10,
-              display: "flex",
-              flexWrap: "wrap",
-              flexDirection: "row",
-              justifyContent: "space-evenly",
-            }}
-          >
+          <View style={styles.picker_matrix}>
             {Array.from<number>({ length: numberArrayLength }).map((_, i) => {
               const number = i + 1;
               const isSelected = selectedNumbers.has(number);
@@ -101,23 +68,16 @@ export default function NumberPicker() {
                 <Pressable
                   key={makeKey(number)}
                   onPress={() => toggleNumber(number)}
-                  style={{
-                    width: 50,
-                    height: 50,
-                    borderWidth: 1,
-                    display: "flex",
-                    borderRadius: 100,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    backgroundColor: isSelected ? "lightgrey" : "transparent",
-                  }}
+                  style={[
+                    styles.picker_button,
+                    { backgroundColor: isSelected ? "#1080e8" : "transparent" },
+                  ]}
                 >
                   <Text
-                    style={{
-                      fontSize: 26,
-                      fontWeight: "bold",
-                      color: isAtLimit ? "grey" : "unset",
-                    }}
+                    style={[
+                      styles.picker_button_text,
+                      { color: isSelected ? "#ecedee" : "unset" },
+                    ]}
                   >
                     {number}
                   </Text>
@@ -127,10 +87,53 @@ export default function NumberPicker() {
           </View>
         </View>
 
-        <StyledButton block disabled={!isAtLimit} onPress={() => handlePlay()}>
+        <ThemedButton block disabled={!isAtLimit} onPress={() => handlePlay()}>
           Play Numbers
-        </StyledButton>
+        </ThemedButton>
       </View>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    gap: 20,
+    width: "100%",
+    height: "auto",
+    display: "flex",
+    flexDirection: "column",
+  },
+  wrapper: {
+    gap: 20,
+    paddingHorizontal: 20,
+  },
+  picker: {
+    gap: 20,
+    display: "flex",
+    alignItems: "center",
+  },
+  picker_heading: {
+    fontSize: 24,
+    fontWeight: "bold",
+  },
+  picker_matrix: {
+    gap: 10,
+    display: "flex",
+    flexWrap: "wrap",
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+  },
+  picker_button: {
+    width: 50,
+    height: 50,
+    borderWidth: 1,
+    display: "flex",
+    borderRadius: 100,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  picker_button_text: {
+    fontSize: 26,
+    fontWeight: "bold",
+  },
+});

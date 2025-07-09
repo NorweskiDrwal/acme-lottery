@@ -1,61 +1,69 @@
-import { FlatList, type ListRenderItemInfo, Text, View } from "react-native";
+import { useRouter } from "expo-router";
+import {
+  FlatList,
+  type ListRenderItemInfo,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 import useListOfPlays from "@/hooks/useListOfPlays";
-import { useRouter } from "expo-router";
-import StyledButton from "./StyledButton";
+import makeKey from "@/utils/makeKey";
 
-function Item({ item }: ListRenderItemInfo<{ id: string; numbers: number[] }>) {
+import ThemedButton from "./ThemedButton";
+
+const styles = StyleSheet.create({
+  container: {
+    gap: 20,
+    padding: 20,
+    display: "flex",
+    borderRadius: 20,
+    backgroundColor: "#e5e7e8",
+  },
+  numbers_wrapper: {
+    gap: 4,
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "center",
+  },
+  number_wrapper: {
+    width: 50,
+    height: 50,
+    display: "flex",
+    borderRadius: 100,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "white",
+  },
+  number_text: {
+    fontSize: 26,
+    fontWeight: "bold",
+  },
+});
+
+function Item({
+  item: { id, numbers },
+}: ListRenderItemInfo<{ id: string; numbers: number[] }>) {
   const removePlay = useListOfPlays((s) => s.removePlay);
 
   return (
-    <View
-      style={{
-        gap: 10,
-        padding: 20,
-        width: "100%",
-        display: "flex",
-        borderRadius: 20,
-        flexDirection: "column",
-        backgroundColor: "lightgrey",
-      }}
-    >
-      <View
-        style={{
-          gap: 4,
-          display: "flex",
-          flexDirection: "row",
-          justifyContent: "center",
-        }}
-      >
-        {item.numbers.map((num) => (
-          <View
-            key={item.id + num}
-            style={{
-              width: 50,
-              height: 50,
-              display: "flex",
-              borderRadius: 100,
-              alignItems: "center",
-              justifyContent: "center",
-              backgroundColor: "white",
-            }}
-          >
-            <Text
-              style={{
-                fontSize: 26,
-                fontWeight: "bold",
-              }}
-            >
-              {num}
-            </Text>
+    <View style={styles.container}>
+      <View style={styles.numbers_wrapper}>
+        {numbers.map((num) => (
+          <View key={makeKey(num)} style={styles.number_wrapper}>
+            <Text style={styles.number_text}>{num}</Text>
           </View>
         ))}
       </View>
 
-      <StyledButton onPress={() => removePlay(item.id)}>
-        delete row
-      </StyledButton>
+      <ThemedButton
+        fontColor="#000"
+        onPress={() => removePlay(id)}
+        style={{ backgroundColor: "#cccdce" }}
+      >
+        delete
+      </ThemedButton>
     </View>
   );
 }
@@ -66,31 +74,25 @@ export default function ListOfPlays() {
   const isLimitReached = useListOfPlays((s) => s.isPlaysLimitReached);
 
   return (
-    <View
-      style={{
-        width: "100%",
-        height: "100%",
-        display: "flex",
-      }}
-    >
-      <SafeAreaProvider>
-        <SafeAreaView>
-          <FlatList
-            data={plays}
-            keyExtractor={(item) => item.id}
-            contentContainerStyle={{ gap: 10 }}
-            renderItem={(props) => <Item {...props} />}
-          />
-        </SafeAreaView>
-
-        <StyledButton
-          block
-          disabled={isLimitReached}
-          onPress={() => router.navigate("/play")}
-        >
-          Add Play
-        </StyledButton>
-      </SafeAreaProvider>
-    </View>
+    <SafeAreaProvider>
+      <SafeAreaView>
+        <FlatList
+          data={plays}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={{ gap: 10 }}
+          renderItem={(props) => <Item {...props} />}
+          ListFooterComponent={
+            <ThemedButton
+              block
+              variant="outline"
+              disabled={isLimitReached}
+              onPress={() => router.navigate("/play")}
+            >
+              Add Play
+            </ThemedButton>
+          }
+        />
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 }

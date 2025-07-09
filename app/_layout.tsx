@@ -6,7 +6,7 @@ export default function RootLayout() {
     <Stack
       screenOptions={{
         headerStyle: {
-          backgroundColor: "#f4511e",
+          backgroundColor: "#1080e8",
         },
       }}
     >
@@ -14,7 +14,7 @@ export default function RootLayout() {
         name="index"
         options={{
           headerTitle: () => (
-            <View style={{ flex: 1, alignItems: "center" }}>
+            <View style={{ display: "flex", alignItems: "center" }}>
               <Text style={{ color: "white" }}>Your Numbers</Text>
             </View>
           ),

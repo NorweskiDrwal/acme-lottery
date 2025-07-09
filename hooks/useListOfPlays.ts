@@ -1,7 +1,7 @@
 import { randomUUID } from "expo-crypto";
 import { create } from "zustand";
 
-import { sequence } from "@/utils";
+import sequence from "@/utils/toSequence";
 
 export default create<{
   playsLimit: number;
