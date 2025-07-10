@@ -1,22 +1,23 @@
 import { create } from "zustand";
 
 export default create<{
+  selectionSize: number;
   selectionLimit: number;
-  numberArrayLength: number;
   selectedNumbers: Set<number>;
   isSelectionLimitReached: boolean;
 
   clearSelectedNumbers: () => void;
-  setSelectionLimit: (selectionLimit: number) => void;
+  setSelectionSize: (selectionSize: number) => void;
   setSelectedNumber: (selectedNumber: number) => void;
+  setSelectionLimit: (selectionLimit: number) => void;
   unsetSelectedNumber: (selectedNumber: number) => void;
-  setNumberArrayLength: (setNumberArrayLength: number) => void;
 }>((set) => ({
+  selectionSize: 42,
   selectionLimit: 5,
-  numberArrayLength: 42,
   isSelectionLimitReached: false,
   selectedNumbers: new Set<number>(),
 
+  setSelectionSize: (selectionSize) => set({ selectionSize }),
   setSelectionLimit: (selectionLimit) => {
     set({
       selectionLimit,
@@ -27,10 +28,8 @@ export default create<{
   clearSelectedNumbers: () => {
     set({ selectedNumbers: new Set(), isSelectionLimitReached: false });
   },
-  setNumberArrayLength: (numberArrayLength) => set({ numberArrayLength }),
   setSelectedNumber: (selectedNumber) => {
     set(({ selectionLimit, selectedNumbers, isSelectionLimitReached }) => {
-      // check if another number can be added
       if (isSelectionLimitReached) return { selectedNumbers };
 
       const next = new Set(selectedNumbers);

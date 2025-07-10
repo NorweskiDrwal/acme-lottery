@@ -1,12 +1,13 @@
 import { useRouter } from "expo-router";
 import { useCallback, useEffect } from "react";
-import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
+import { Alert, StyleSheet, Text, View } from "react-native";
 
 import useListOfPlays from "@/hooks/useListOfPlays";
 import useNumberPicker from "@/hooks/useNumberPicker";
 import makeKey from "@/utils/makeKey";
 import sequence from "@/utils/toSequence";
 
+import NumberPickerButton from "./NumberPickerButton";
 import SelectedNumbersDisplay from "./SelectedNumbersDisplay";
 import ThemedButton from "./ThemedButton";
 
@@ -16,7 +17,7 @@ export default function NumberPicker() {
   const selectionLimit = useNumberPicker((s) => s.selectionLimit);
   const selectedNumbers = useNumberPicker((s) => s.selectedNumbers);
   const isAtLimit = useNumberPicker((s) => s.isSelectionLimitReached);
-  const numberArrayLength = useNumberPicker((s) => s.numberArrayLength);
+  const selectionSize = useNumberPicker((s) => s.selectionSize);
   const setSelectedNumber = useNumberPicker((s) => s.setSelectedNumber);
   const unsetSelectedNumber = useNumberPicker((s) => s.unsetSelectedNumber);
   const clearSelectedNumbers = useNumberPicker((s) => s.clearSelectedNumbers);
@@ -41,13 +42,12 @@ export default function NumberPicker() {
       if (sequence(numbers) === sequence(play.numbers)) okToAdd = false;
     }
 
+    clearSelectedNumbers();
     if (!okToAdd) Alert.alert(`Numbers ${numbers} are already selected!`);
     else {
       addPlay(numbers);
       router.navigate("/");
     }
-
-    clearSelectedNumbers();
   }, [plays, router, addPlay, selectedNumbers, clearSelectedNumbers]);
 
   return (
@@ -61,33 +61,21 @@ export default function NumberPicker() {
           </Text>
 
           <View style={styles.picker_matrix}>
-            {Array.from<number>({ length: numberArrayLength }).map((_, i) => {
+            {Array.from<number>({ length: selectionSize }).map((_, i) => {
               const number = i + 1;
-              const isSelected = selectedNumbers.has(number);
               return (
-                <Pressable
+                <NumberPickerButton
+                  number={number}
                   key={makeKey(number)}
-                  onPress={() => toggleNumber(number)}
-                  style={[
-                    styles.picker_button,
-                    { backgroundColor: isSelected ? "#1080e8" : "transparent" },
-                  ]}
-                >
-                  <Text
-                    style={[
-                      styles.picker_button_text,
-                      { color: isSelected ? "#ecedee" : "unset" },
-                    ]}
-                  >
-                    {number}
-                  </Text>
-                </Pressable>
+                  onToggle={toggleNumber}
+                  isSelected={selectedNumbers.has(number)}
+                />
               );
             })}
           </View>
         </View>
 
-        <ThemedButton block disabled={!isAtLimit} onPress={() => handlePlay()}>
+        <ThemedButton block disabled={!isAtLimit} onPress={handlePlay}>
           Play Numbers
         </ThemedButton>
       </View>
@@ -122,18 +110,5 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     flexDirection: "row",
     justifyContent: "space-evenly",
-  },
-  picker_button: {
-    width: 50,
-    height: 50,
-    borderWidth: 1,
-    display: "flex",
-    borderRadius: 100,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  picker_button_text: {
-    fontSize: 26,
-    fontWeight: "bold",
   },
 });

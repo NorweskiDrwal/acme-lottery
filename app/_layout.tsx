@@ -1,35 +1,22 @@
 import { Stack } from "expo-router";
-import { Text, View } from "react-native";
+
+import HeaderTitle from "@/components/HeaderTitle";
 
 export default function RootLayout() {
   return (
     <Stack
       screenOptions={{
-        headerStyle: {
-          backgroundColor: "#1080e8",
-        },
+        headerStyle: { backgroundColor: "#1080e8" },
       }}
     >
       <Stack.Screen
         name="index"
-        options={{
-          headerTitle: () => (
-            <View style={{ display: "flex", alignItems: "center" }}>
-              <Text style={{ color: "white" }}>Your Numbers</Text>
-            </View>
-          ),
-        }}
+        options={{ headerTitle: () => <HeaderTitle title="Your Numbers" /> }}
       />
 
       <Stack.Screen
         name="play"
-        options={{
-          headerTitle: () => (
-            <View style={{ display: "flex", alignItems: "center" }}>
-              <Text style={{ color: "white" }}>Lucky Lotto</Text>
-            </View>
-          ),
-        }}
+        options={{ headerTitle: () => <HeaderTitle title="Lucky Lotto" /> }}
       />
     </Stack>
   );

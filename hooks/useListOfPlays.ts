@@ -31,7 +31,6 @@ export default create<{
 
   addPlay: (numbers) => {
     set(({ plays, playsLimit, isPlaysLimitReached }) => {
-      // break if not within limit
       if (isPlaysLimitReached) return { plays };
 
       for (let play of plays) {
